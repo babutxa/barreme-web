@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Barrême</title>
+<meta name="description" content="Springboard & platform diving score calculator for judges">
+<meta name="theme-color" content="#1A1A2E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  :root {
+    --bg: #1A1A2E;
+    --surface: #16213E;
+    --button: #2A3A5C;
+    --border: #3A4A6C;
+    --blue: #4FC3F7;
+    --green: #66BB6A;
+    --orange: #FF9800;
+    --gold: #FFD54F;
+    --text: #FFFFFF;
+    --text2: #B0BEC5;
+    --gap: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .app {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+    gap: 12px;
+    height: 100dvh;
+    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+             max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+  .panel {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  h2 { margin: 0 0 4px 4px; color: var(--blue); font-size: 20px; }
+  .head { display: flex; align-items: center; gap: var(--gap); margin-bottom: 4px; }
+  .head h2 { flex: 1; margin-bottom: 0; }
+  .grid { flex: 1; display: grid; gap: var(--gap); min-height: 0; }
+  .cols { display: grid; grid-template-columns: repeat(4, 1fr); color: var(--text2);
+          font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 2px; }
+  button {
+    font: inherit;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--button);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0;
+    min-height: 0;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  button.on { color: #000; font-weight: 700; }
+  .dc button.on { background: var(--orange); border-color: var(--orange); }
+  .score button.on { background: var(--green); border-color: var(--green); }
+  .mode button { font-size: 14px; min-width: 96px; height: 30px; }
+  .mode button.on { background: var(--blue); border-color: var(--blue); }
+  .result { padding: 16px; align-items: center; justify-content: center; text-align: center; }
+  #result { font-size: 64px; font-weight: 700; color: var(--gold); margin: 24px 0 16px; }
+  #result.empty { font-size: 48px; color: var(--text2); }
+  #summary { color: var(--text2); font-size: 20px; white-space: pre-line; }
+  #summary.empty { font-size: 14px; }
+
+  /* Portrait phones: result on top, grids below, page scrolls */
+  @media (max-aspect-ratio: 1/1) {
+    .app { grid-template-columns: minmax(0, 1fr); height: auto; }
+    .mode button { min-width: 84px; }
+    .result { position: sticky; top: 0; z-index: 1; order: -1; padding: 8px;
+              box-shadow: 0 4px 12px var(--bg); }
+    #result { font-size: 48px; margin: 4px 0; }
+    #summary { font-size: 16px; }
+    .grid { grid-auto-rows: 44px; }
+    .grid.dc { grid-template-rows: none !important; }
+    .grid.score { grid-template-rows: none !important; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <section class="panel">
+    <h2>DC</h2>
+    <div class="cols"><span>1</span><span>2</span><span>3</span><span>4</span></div>
+    <div class="grid dc" id="dc"></div>
+  </section>
+  <section class="panel">
+    <div class="head">
+      <h2>Score</h2>
+      <span class="mode" id="mode"></span>
+    </div>
+    <div class="grid score" id="score"></div>
+  </section>
+  <section class="panel result">
+    <h2>Result</h2>
+    <div id="result"></div>
+    <div id="summary"></div>
+  </section>
+</main>
+
+<script>
+  // Values are kept as integers to stay exact: DC in tenths (28 = 2.8), score in halves (71 = 35.5)
+  const state = { dc: null, score: null, synchro: false };
+
+  const MODES = {
+    // Individual: 3 counted scores (0-30). Synchro: 5 counted scores (0-50).
+    // Taller rows for the most likely sums: 12-19 individual, 18-35 synchro (same range × 5/3)
+    individual: { max: 30, columns: 4, rows: [0.7, 0.8, 0.9, 1, 1, 0.9, 0.8, 0.7] },
+    synchro: { max: 50, columns: 6, rows: [0.7, 0.8, 0.9, 1, 1, 0.9, 0.8, 0.75, 0.7] },
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const tenths = (n) => (n / 10).toFixed(1);
+  // Results have at most 2 decimals: show both, dropping a trailing zero (49.00 -> 49.0)
+  const hundredths = (n) => (n / 100).toFixed(2).replace(/0$/, "");
+
+  function button(text, on, onClick) {
+    const b = document.createElement("button");
+    b.textContent = text;
+    b.className = on ? "on" : "";
+    b.onclick = onClick;
+    return b;
+  }
+
+  function render() {
+    const mode = state.synchro ? MODES.synchro : MODES.individual;
+
+    // DC grid: 10 rows (.0 through .9) × 4 columns (1-4), max 4.8
+    const dc = $("dc");
+    dc.replaceChildren();
+    dc.style.gridTemplateColumns = "repeat(4, 1fr)";
+    dc.style.gridTemplateRows = "repeat(10, 1fr)";
+    for (let decimal = 0; decimal <= 9; decimal++) {
+      for (let integer = 1; integer <= 4; integer++) {
+        const value = integer * 10 + decimal;
+        dc.append(value > 48 ? document.createElement("span")
+          : button(tenths(value), state.dc === value, () => { state.dc = value; update(); }));
+      }
+    }
+
+    $("mode").replaceChildren(
+      button("Individual", !state.synchro, () => setMode(false)),
+      button("Synchro", state.synchro, () => setMode(true)),
+    );
+
+    const score = $("score");
+    score.replaceChildren();
+    score.style.gridTemplateColumns = `repeat(${mode.columns}, 1fr)`;
+    score.style.gridTemplateRows = mode.rows.map((r) => r + "fr").join(" ");
+    for (let s = 0; s <= mode.max; s++) {
+      const selected = state.score !== null && Math.floor(state.score / 2) === s;
+      const text = selected && state.score % 2 ? s + ".5" : String(s);
+      // Tapping the selected score again toggles the half point (not on the maximum)
+      score.append(button(text, selected, () => {
+        state.score = state.score === s * 2 && s !== mode.max ? s * 2 + 1 : s * 2;
+        update();
+      }));
+    }
+
+    const result = $("result");
+    const summary = $("summary");
+    if (state.dc === null || state.score === null) {
+      result.textContent = "—";
+      result.className = "empty";
+      summary.textContent = "Select DC and Score";
+      summary.className = "empty";
+      return;
+    }
+    const sum = state.score * 5; // score in tenths
+    const dcText = tenths(state.dc);
+    if (state.synchro) {
+      // Rulebook D 7.8: sum : 5 × 3 = counted, counted × DC (e.g. 35.5 : 5 × 3 = 21.3 × 2.8 = 59.64)
+      const counted = tenths(state.score * 3);
+      const value = hundredths(state.score * state.dc * 3);
+      result.textContent = value;
+      summary.textContent = `${tenths(sum)} : 5 × 3 = ${counted}\n${counted} × ${dcText} = ${value}`;
+    } else {
+      const value = hundredths(state.score * state.dc * 5);
+      result.textContent = value;
+      summary.textContent = `${dcText} × ${tenths(sum)} = ${value}`;
+    }
+    result.className = "";
+    summary.className = "";
+  }
+
+  function setMode(synchro) {
+    if (synchro === state.synchro) return;
+    state.synchro = synchro;
+    state.score = null;
+    update();
+  }
+
+  // Count a calculation once the result has been on screen for 2 s without changes
+  let countTimer;
+  function update() {
+    render();
+    clearTimeout(countTimer);
+    if (state.dc === null || state.score === null) return;
+    countTimer = setTimeout(() => {
+      window.goatcounter?.count?.({
+        path: state.synchro ? "calc-synchro" : "calc-individual",
+        title: state.synchro ? "Synchro calculation" : "Individual calculation",
+        event: true,
+      });
+    }, 2000);
+  }
+
+  render();
+
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+<script data-goatcounter="https://barreme.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
