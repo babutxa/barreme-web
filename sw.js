@@ -1,5 +1,5 @@
 // Keeps the app working offline: serve from cache, refresh the cache in the background
-const CACHE = "barreme-v1";
+const CACHE = "barreme-v2";
 const FILES = ["./", "index.html", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png", "icon-180.png"];
 
 self.addEventListener("install", (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES))));
