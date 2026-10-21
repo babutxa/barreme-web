@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Full-bleed version for Android/iOS, which apply their own shape (circle, squircle...).
+       The drawing is scaled to fit the safe zone: a centred circle of radius 205 -->
+  <rect width="512" height="512" fill="#16213E"/>
+  <g transform="translate(256 256) scale(0.76) translate(-275 -287)">
+    <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
+      <!-- 10 m platform -->
+      <path d="M100 144 H412" stroke-width="24"/>
+      <path d="M120 144 V100 H220 M220 100 V144" stroke-width="14"/>
+      <!-- 5 m platform -->
+      <path d="M100 262 H342" stroke-width="24"/>
+      <path d="M120 262 V218 H200 M200 218 V262" stroke-width="14"/>
+      <!-- tower and pool side -->
+      <path d="M152 144 V400" stroke-width="24"/>
+      <path d="M84 400 H246 V440" stroke-width="24"/>
+    </g>
+    <!-- water -->
+    <g fill="none" stroke="#4FC3F7" stroke-width="20" stroke-linecap="round">
+      <path d="M286 420 q20 -16 40 0 t40 0 t40 0 t40 0"/>
+      <path d="M286 466 q20 -16 40 0 t40 0 t40 0 t40 0" opacity="0.5"/>
+    </g>
+  </g>
+</svg>

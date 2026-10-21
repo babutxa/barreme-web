@@ -1,7 +1,7 @@
 // Keeps the app working offline: always try the network first (so updates show up at once),
 // fall back to the cached copy when there is no connection
-const CACHE = "barreme-v5";
-const FILES = ["./", "index.html", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png", "icon-180.png"];
+const CACHE = "barreme-v6";
+const FILES = ["./", "index.html", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png", "icon-180.png", "icon-maskable-192.png", "icon-maskable-512.png"];
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();
