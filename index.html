@@ -194,7 +194,7 @@
     } else {
       const value = hundredths(state.score * state.dc * 5);
       result.textContent = value;
-      summary.textContent = `${dcText} × ${tenths(sum)} = ${value}`;
+      summary.textContent = `${tenths(sum)} × ${dcText} = ${value}`;
     }
     result.className = "";
     summary.className = "";
