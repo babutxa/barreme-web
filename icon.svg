@@ -1,12 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <clipPath id="c"><rect width="512" height="512" rx="96"/></clipPath>
   <g clip-path="url(#c)">
-    <rect width="512" height="512" fill="#FF9800"/>
-    <path d="M0 0 H512 L0 512 Z" fill="#16213E"/>
-    <!-- Swan dive: legs together, arms spread, head up -->
-    <g fill="#FFFFFF">
-      <polygon points="301.1,168.3 260.9,114.9 219.5,59.1 204.5,68.9 239.1,129.1 270.9,187.7"/><circle cx="286.0" cy="178.0" r="18.0"/><circle cx="250.0" cy="122.0" r="13.0"/><circle cx="212.0" cy="64.0" r="9.0"/><polygon points="187.9,283.9 135.6,378.6 95.8,444.0 66.2,490.7 73.8,497.3 116.2,460.0 168.4,401.4 236.1,316.1"/><circle cx="212.0" cy="300.0" r="29.0"/><circle cx="152.0" cy="390.0" r="20.0"/><circle cx="106.0" cy="452.0" r="13.0"/><circle cx="70.0" cy="494.0" r="5.0"/><polygon points="241.7,309.0 259.5,269.6 279.3,239.0 307.4,206.0 272.6,162.0 224.7,189.0 192.5,238.4 182.3,291.0"/><circle cx="212.0" cy="300.0" r="31.0"/><circle cx="226.0" cy="254.0" r="37.0"/><circle cx="252.0" cy="214.0" r="37.0"/><circle cx="290.0" cy="184.0" r="28.0"/><polygon points="293.2,213.7 373.4,238.2 450.9,262.4 457.1,245.6 382.6,213.8 306.8,178.3"/><circle cx="300.0" cy="196.0" r="19.0"/><circle cx="378.0" cy="226.0" r="13.0"/><circle cx="454.0" cy="254.0" r="9.0"/><polygon points="311.0,188.2 335.5,158.8 316.5,141.2 289.0,167.8"/><circle cx="300.0" cy="178.0" r="15.0"/><circle cx="326.0" cy="150.0" r="13.0"/>
-      <ellipse cx="342" cy="126" rx="25" ry="30" transform="rotate(35 342 126)"/>
+    <rect width="512" height="512" fill="#16213E"/>
+    <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
+      <!-- 10 m platform -->
+      <path d="M100 144 H412" stroke-width="24"/>
+      <path d="M120 144 V100 H220 M220 100 V144" stroke-width="14"/>
+      <!-- 5 m platform -->
+      <path d="M100 262 H342" stroke-width="24"/>
+      <path d="M120 262 V218 H200 M200 218 V262" stroke-width="14"/>
+      <!-- tower and pool side -->
+      <path d="M152 144 V400" stroke-width="24"/>
+      <path d="M84 400 H246 V440" stroke-width="24"/>
+    </g>
+    <!-- water -->
+    <g fill="none" stroke="#4FC3F7" stroke-width="20" stroke-linecap="round">
+      <path d="M286 420 q20 -16 40 0 t40 0 t40 0 t40 0"/>
+      <path d="M286 466 q20 -16 40 0 t40 0 t40 0 t40 0" opacity="0.5"/>
     </g>
   </g>
 </svg>
