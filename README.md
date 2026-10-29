@@ -29,3 +29,7 @@ Barrême works in any browser and can be installed like an app. Once it has been
 ## Privacy
 
 Barrême stores nothing about you. It counts anonymously how many calculations are made (with [GoatCounter](https://www.goatcounter.com/)), without cookies or personal data.
+
+## License
+
+[MIT](LICENSE) © 2026 Alba Ferrer Biosca
