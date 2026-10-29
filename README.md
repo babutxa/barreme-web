@@ -4,6 +4,8 @@ Score calculator for springboard and platform diving judges. Pick the degree of 
 
 **Open it at https://babutxa.github.io/barreme-web/**
 
+The name comes from [François Barrême](https://fr.wikipedia.org/wiki/Fran%C3%A7ois_Barr%C3%AAme), a 17th-century French mathematician whose ready-reckoner tables gave us the word *barème* (*baremo* in Spanish, *barem* in Catalan): a table of precalculated values.
+
 ## How to use it
 
 1. **Choose the mode** at the top of the Score panel: *Individual* or *Synchro*.
